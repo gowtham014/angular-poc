@@ -46,6 +46,11 @@ pipeline{
         sh "cd dist/ && zip -r angular-app.zip ."
       }
     }
+    stage('vulnerability-scan'){
+        steps{
+            sh'grype file:dist/angular-app.zip'
+        }
+    }
     stage('Upload to Nexus') {
       steps {
         nexusArtifactUploader(
