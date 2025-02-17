@@ -41,15 +41,17 @@ pipeline{
         """
       }
     }
-    stage ('packaging'){
-      steps {
-        sh "zip -r angular-app.zip ."
-      }
-    }
     stage('vulnerability-scan'){
         steps{
-            sh'grype file:angular-app.zip'
+            sh'grype dir:.'
         }
+    }
+    stage ('packaging'){
+      steps {
+        sh """
+        rm -rf node_modules/
+        zip -r angular-app.zip ."""
+      }
     }
     stage('Upload to Nexus') {
       steps {
