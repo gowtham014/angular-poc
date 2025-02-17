@@ -43,12 +43,12 @@ pipeline{
     }
     stage ('packaging'){
       steps {
-        sh "cd dist/ && zip -r angular-app.zip ."
+        sh "zip -r angular-app.zip ."
       }
     }
     stage('vulnerability-scan'){
         steps{
-            sh'grype file:dist/angular-app.zip'
+            sh'grype file:angular-app.zip'
         }
     }
     stage('Upload to Nexus') {
@@ -65,7 +65,7 @@ pipeline{
             [
               artifactId: 'angular',
               classifier: '',
-              file: 'dist/angular-app.zip',
+              file: 'angular-app.zip',
               type: 'zip'
             ]
             
