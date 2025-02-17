@@ -1,0 +1,32 @@
+pipeline {
+    agent any
+    parameters {
+        string(name: 'ARTIFACT_VERSION', defaultValue: '1', description: 'Enter the version of the artifact to download from Nexus')
+    }
+    environment {
+        SSH_USER = 'ubuntu'
+        SSH_HOST = '43.204.103.114'
+        NEXUS_URL = 'http://34.44.201.119:8081/repository/angular-app/DEV/angular/'
+        ARTIFACT_PATH = '/home/ubuntu/angular/' 
+        ARTIFACT_NAME = "${params.ARTIFACT_VERSION}/angular-${params.ARTIFACT_VERSION}.zip"
+    }
+    stages {
+        stage('Use PEM Key for SSH') {
+            steps {
+                withCredentials([file(credentialsId:'pem-key', variable: 'PEM_FILE')]) {
+                    sh """
+                    chmod 400 $PEM_FILE
+                    ssh -i $PEM_FILE -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST 
+                    cd $ARTIFACT_PATH
+                    rm -rf *
+                    wget $NEXUS_URL/$ARTIFACT_NAME
+                    unzip angular-${params.ARTIFACT_VERSION}.zip
+                    rm -rf *.zip
+                    nohup ng serve --host 0.0.0.0 --port 4200 --disable-host-check > app.log 2>&1 &
+                    """
+                }
+            }
+        }
+    }
+}
+
