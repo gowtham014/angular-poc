@@ -49,7 +49,6 @@ pipeline{
     stage ('packaging'){
       steps {
         sh """
-        rm -rf node_modules/
         zip -r angular-app.zip ."""
       }
     }
